@@ -11,15 +11,6 @@
  *
  * Find:"(test\('[^']+',)"
  * Replace:"\1 () {\n      assertLinkify("
- *
- * Find:
- * Replace:
- *
- * Find:
- * Replace:
- *
- * Find:
- * Replace:
  */
 library linkify_test;
 
@@ -28,7 +19,7 @@ import 'package:linkify/linkify.dart';
 import 'dart:convert';
 
 void assertLinkify(String input, String expected) {
-  expect(linkifyPlainText(input, {"rel": '', "target": ''}), equals(expected));
+  expect(linkifyPlainText(input, {'rel': '', 'target': ''}), equals(expected));
 }
 
 // do not want to change all tests, create method for easier conversion from JS
@@ -341,6 +332,34 @@ main() {
           'This is awesome <a href="http://www.google.com">www.google.com<\/a>!');
     });
 
+    test('Linkify no options', () {
+      var innerHtml = linkifyPlainText('http://www.google.com');
+      expect(innerHtml, equals(
+          '<a href="http://www.google.com" target="_blank" rel="nofollow">' +
+          'http://www.google.com</a>'));
+    });
+
+    test('Linkify options no attributes', () {
+      var innerHtml  = linkifyPlainText(
+          'The link for www.google.com is located somewhere in ' +
+          'https://www.google.fr/?hl=en, you should find it easily.',
+          {'rel': '', 'target': ''});
+      expect(innerHtml, equals(
+          'The link for <a href="http://www.google.com">www.google.com<\/a> is ' +
+          'located somewhere in ' +
+          '<a href="https://www.google.fr/?hl=en">https://www.google.fr/?hl=en' +
+          '<\/a>, you should find it easily.'));
+    });
+
+    test('Linkify options class name', () {
+      var innerHtml  = linkifyPlainText(
+          'Attribute with <class> name www.w3c.org.',
+          {'class': 'link-added'});
+      expect(innerHtml, equals(
+          'Attribute with &lt;class&gt; name <a href="http://www.w3c.org" ' +
+          'target="_blank" rel="nofollow" class="link-added">www.w3c.org<\/a>.'));
+    });
+
   });
 
   group('findFirstUrl', () {
@@ -387,37 +406,3 @@ main() {
       });
   });
 }
-
-
-function testLinkifyNoOptions() {
-  div.innerHTML = linkifyPlainText('http://www.google.com');
-  goog.testing.dom.assertHtmlContentsMatch(
-      '<a href="http://www.google.com" target="_blank" rel="nofollow">' +
-      'http://www.google.com<\/a>',
-      div, true /* opt_strictAttributes */);
-}
-
-function testLinkifyOptionsNoAttributes() {
-  div.innerHTML = linkifyPlainText(
-      'The link for www.google.com is located somewhere in ' +
-      'https://www.google.fr/?hl=en, you should find it easily.',
-      {rel: '', target: ''});
-  goog.testing.dom.assertHtmlContentsMatch(
-      'The link for <a href="http://www.google.com">www.google.com<\/a> is ' +
-      'located somewhere in ' +
-      '<a href="https://www.google.fr/?hl=en">https://www.google.fr/?hl=en' +
-      '<\/a>, you should find it easily.',
-      div, true /* opt_strictAttributes */);
-}
-
-function testLinkifyOptionsClassName() {
-  div.innerHTML = linkifyPlainText(
-      'Attribute with <class> name www.w3c.org.',
-      {'class': 'link-added'});
-  goog.testing.dom.assertHtmlContentsMatch(
-      'Attribute with &lt;class&gt; name <a href="http://www.w3c.org" ' +
-      'target="_blank" rel="nofollow" class="link-added">www.w3c.org<\/a>.',
-      div, true /* opt_strictAttributes */);
-}
-
-
