@@ -25,6 +25,7 @@ library linkify_test;
 
 import 'package:unittest/unittest.dart';
 import 'package:linkify/linkify.dart';
+import 'dart:convert';
 
 void assertLinkify(String input, String expected) {
   expect(linkifyPlainText(input, {"rel": '', "target": ''}), equals(expected));
@@ -33,6 +34,12 @@ void assertLinkify(String input, String expected) {
 main() {
 
   group('Linkify', () {
+
+    HtmlEscape htmlEscape;
+
+    setUp() {
+      htmlEscape = new HtmlEscape();
+    }
 
     test('Text does not contain any links', () {
       assertLinkify(
@@ -128,7 +135,7 @@ main() {
           'I use both http://www.google.com and http://yahoo.com, don\'t you?',
           'I use both <a href="http://www.google.com">http://www.google.com<\/a> ' +
               'and <a href="http://yahoo.com">http://yahoo.com<\/a>, ' +
-          goog.string.htmlEscape('don\'t you?'));
+              htmlEscape.convert('don\'t you?'));
     });
 
     test('URL with GET params', () {
@@ -152,7 +159,7 @@ main() {
     test('URL without http protocol', () {
       assertLinkify(
           'It\'s faster to type www.google.com without the http:// in front.',
-      goog.string.htmlEscape('It\'s faster to type ') +
+              htmlEscape.convert('It\'s faster to type ') +
               '<a href="http://www.google.com">www.google.com' +
               '<\/a> without the http:// in front.');
     });
@@ -210,7 +217,7 @@ main() {
     test('Text includes some javascript', () {
       assertLinkify(
           'Welcome in hell <script>alert(\'this is hell\')<\/script>',
-      goog.string.htmlEscape('Welcome in hell <script>alert(\'this is hell\')<\/script>'));
+              htmlEscape.convert('Welcome in hell <script>alert(\'this is hell\')<\/script>'));
     });
 
     test('Javascript injection using regex . blindness to newline chars', () {
@@ -280,7 +287,7 @@ main() {
       assertLinkify(
           'Have you seen www.google.com? It\'s awesome.',
           'Have you seen <a href="http://www.google.com">www.google.com<\/a>?' +
-      goog.string.htmlEscape(' It\'s awesome.'));
+              htmlEscape.convert(' It\'s awesome.'));
     });
 
     test('Link inside parentheses', () {
