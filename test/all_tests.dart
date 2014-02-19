@@ -22,11 +22,6 @@ void assertLinkify(String input, String expected) {
   expect(linkifyPlainText(input, {'rel': '', 'target': ''}), equals(expected));
 }
 
-// do not want to change all tests, create method for easier conversion from JS
-void assertEquals(String input, String expected) {
-  expect(input, equals(expected));
-}
-
 main() {
 
   group('linkifyPlainText', () {
@@ -364,45 +359,45 @@ main() {
 
   group('findFirstUrl', () {
      test('Find first URL no scheme', () {
-        assertEquals('www.google.com', findFirstUrl('www.google.com'));
+        expect(findFirstUrl('www.google.com'), equals('www.google.com'));
       });
 
      test('Find first URL no scheme with text', () {
-        assertEquals('www.google.com', findFirstUrl('prefix www.google.com something'));
+        expect(findFirstUrl('prefix www.google.com something'), equals('www.google.com'));
      });
 
       test('Find first URL scheme', () {
-        assertEquals('http://www.google.com', findFirstUrl('http://www.google.com'));
+        expect(findFirstUrl('http://www.google.com'), equals('http://www.google.com'));
       });
 
       test('Find first URL scheme with text', () {
-        assertEquals('http://www.google.com', findFirstUrl('prefix http://www.google.com something'));
+        expect(findFirstUrl('prefix http://www.google.com something'), equals('http://www.google.com'));
       });
 
       test('Find first URL no url', () {
-        assertEquals('', findFirstUrl('ygvtfr676 5v68fk uygbt85F^&%^&I%FVvc .'));
+        expect(findFirstUrl('ygvtfr676 5v68fk uygbt85F^&%^&I%FVvc .'), equals(''));
       });
   });
 
   group('findFirstEmail', () {
       test('Find first email no scheme', () {
-        assertEquals('fake@google.com', findFirstEmail('fake@google.com'));
+        expect(findFirstEmail('fake@google.com'), equals('fake@google.com'));
       });
 
       test('Find first email no scheme with text', () {
-        assertEquals('fake@google.com', findFirstEmail('prefix fake@google.com something'));
+        expect(findFirstEmail('prefix fake@google.com something'), equals('fake@google.com'));
       });
 
       test('Find first email scheme', () {
-        assertEquals('mailto:fake@google.com', findFirstEmail('mailto:fake@google.com'));
+        expect(findFirstEmail('mailto:fake@google.com'), equals('mailto:fake@google.com'));
       });
 
       test('Find first email scheme with text', () {
-        assertEquals('mailto:fake@google.com', findFirstEmail('prefix mailto:fake@google.com something'));
+        expect(findFirstEmail('prefix mailto:fake@google.com something'), equals('mailto:fake@google.com'));
       });
 
       test('Find first email no URL', () {
-        assertEquals('', findFirstEmail('ygvtfr676 5v68fk uygbt85F^&%^&I%FVvc .'));
+        expect(findFirstEmail('ygvtfr676 5v68fk uygbt85F^&%^&I%FVvc .'), equals(''));
       });
   });
 }
