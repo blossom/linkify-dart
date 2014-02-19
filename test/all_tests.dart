@@ -344,28 +344,47 @@ main() {
   });
 
   group('findFirstUrl', () {
-     test('find first URL no scheme', () {
+     test('Find first URL no scheme', () {
         assertEquals('www.google.com', findFirstUrl('www.google.com'));
       });
 
-     test('find first URL no scheme with text', () {
+     test('Find first URL no scheme with text', () {
         assertEquals('www.google.com', findFirstUrl('prefix www.google.com something'));
      });
 
-      test('find first URL scheme', () {
+      test('Find first URL scheme', () {
         assertEquals('http://www.google.com', findFirstUrl('http://www.google.com'));
       });
 
-      test('find first URL scheme with text', () {
+      test('Find first URL scheme with text', () {
         assertEquals('http://www.google.com', findFirstUrl('prefix http://www.google.com something'));
       });
 
-      test('find first URL no url', () {
+      test('Find first URL no url', () {
         assertEquals('', findFirstUrl('ygvtfr676 5v68fk uygbt85F^&%^&I%FVvc .'));
       });
   });
 
-  group('Linkify', () {
+  group('findFirstEmail', () {
+      test('Find first email no scheme', () {
+        assertEquals('fake@google.com', findFirstEmail('fake@google.com'));
+      });
+
+      test('Find first email no scheme with text', () {
+        assertEquals('fake@google.com', findFirstEmail('prefix fake@google.com something'));
+      });
+
+      test('Find first email scheme', () {
+        assertEquals('mailto:fake@google.com', findFirstEmail('mailto:fake@google.com'));
+      });
+
+      test('Find first email scheme with text', () {
+        assertEquals('mailto:fake@google.com', findFirstEmail('prefix mailto:fake@google.com something'));
+      });
+
+      test('Find first email no URL', () {
+        assertEquals('', findFirstEmail('ygvtfr676 5v68fk uygbt85F^&%^&I%FVvc .'));
+      });
   });
 }
 
@@ -401,29 +420,4 @@ function testLinkifyOptionsClassName() {
       div, true /* opt_strictAttributes */);
 }
 
-
-void testFindFirstEmailNoScheme() {
-  assertEquals('fake@google.com', findFirstEmail(
-      'fake@google.com'));
-}
-
-void testFindFirstEmailNoSchemeWithText() {
-  assertEquals('fake@google.com', findFirstEmail(
-      'prefix fake@google.com something'));
-}
-
-void testFindFirstEmailScheme() {
-  assertEquals('mailto:fake@google.com', findFirstEmail(
-      'mailto:fake@google.com'));
-}
-
-void testFindFirstEmailSchemeWithText() {
-  assertEquals('mailto:fake@google.com', findFirstEmail(
-      'prefix mailto:fake@google.com something'));
-}
-
-void testFindFirstEmailNoUrl() {
-  assertEquals('', findFirstEmail(
-      'ygvtfr676 5v68fk uygbt85F^&%^&I%FVvc .'));
-}
 
