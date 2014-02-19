@@ -18,19 +18,25 @@ import 'package:unittest/unittest.dart';
 import 'package:linkify/linkify.dart';
 import 'dart:convert';
 
-void assertLinkify(String input, String expected) {
-  expect(linkifyPlainText(input, {'rel': '', 'target': ''}), equals(expected));
-}
-
 main() {
 
-  group('linkifyPlainText', () {
+  Linkify linkify;
+
+  void assertLinkify(String input, String expected) {
+    expect(linkify.convert(input, {'rel': '', 'target': ''}), equals(expected));
+  }
+
+  setUp(() {
+    linkify = new Linkify();
+  });
+
+  group('convert (linkifyPlainText)', () {
 
     HtmlEscape htmlEscape;
 
-    setUp() {
+    setUp(() {
       htmlEscape = new HtmlEscape();
-    }
+    });
 
     test('Text does not contain any links', () {
       assertLinkify(
@@ -328,14 +334,14 @@ main() {
     });
 
     test('Linkify no options', () {
-      var innerHtml = linkifyPlainText('http://www.google.com');
+      var innerHtml = linkify.convert('http://www.google.com');
       expect(innerHtml, equals(
           '<a href="http://www.google.com" target="_blank" rel="nofollow">' +
           'http://www.google.com</a>'));
     });
 
     test('Linkify options no attributes', () {
-      var innerHtml  = linkifyPlainText(
+      var innerHtml  = linkify.convert(
           'The link for www.google.com is located somewhere in ' +
           'https://www.google.fr/?hl=en, you should find it easily.',
           {'rel': '', 'target': ''});
@@ -347,7 +353,7 @@ main() {
     });
 
     test('Linkify options class name', () {
-      var innerHtml  = linkifyPlainText(
+      var innerHtml  = linkify.convert(
           'Attribute with <class> name www.w3c.org.',
           {'class': 'link-added'});
       expect(innerHtml, equals(
@@ -359,45 +365,45 @@ main() {
 
   group('findFirstUrl', () {
      test('Find first URL no scheme', () {
-        expect(findFirstUrl('www.google.com'), equals('www.google.com'));
+        expect(linkify.findFirstUrl('www.google.com'), equals('www.google.com'));
       });
 
      test('Find first URL no scheme with text', () {
-        expect(findFirstUrl('prefix www.google.com something'), equals('www.google.com'));
+        expect(linkify.findFirstUrl('prefix www.google.com something'), equals('www.google.com'));
      });
 
       test('Find first URL scheme', () {
-        expect(findFirstUrl('http://www.google.com'), equals('http://www.google.com'));
+        expect(linkify.findFirstUrl('http://www.google.com'), equals('http://www.google.com'));
       });
 
       test('Find first URL scheme with text', () {
-        expect(findFirstUrl('prefix http://www.google.com something'), equals('http://www.google.com'));
+        expect(linkify.findFirstUrl('prefix http://www.google.com something'), equals('http://www.google.com'));
       });
 
       test('Find first URL no url', () {
-        expect(findFirstUrl('ygvtfr676 5v68fk uygbt85F^&%^&I%FVvc .'), equals(''));
+        expect(linkify.findFirstUrl('ygvtfr676 5v68fk uygbt85F^&%^&I%FVvc .'), equals(''));
       });
   });
 
   group('findFirstEmail', () {
       test('Find first email no scheme', () {
-        expect(findFirstEmail('fake@google.com'), equals('fake@google.com'));
+        expect(linkify.findFirstEmail('fake@google.com'), equals('fake@google.com'));
       });
 
       test('Find first email no scheme with text', () {
-        expect(findFirstEmail('prefix fake@google.com something'), equals('fake@google.com'));
+        expect(linkify.findFirstEmail('prefix fake@google.com something'), equals('fake@google.com'));
       });
 
       test('Find first email scheme', () {
-        expect(findFirstEmail('mailto:fake@google.com'), equals('mailto:fake@google.com'));
+        expect(linkify.findFirstEmail('mailto:fake@google.com'), equals('mailto:fake@google.com'));
       });
 
       test('Find first email scheme with text', () {
-        expect(findFirstEmail('prefix mailto:fake@google.com something'), equals('mailto:fake@google.com'));
+        expect(linkify.findFirstEmail('prefix mailto:fake@google.com something'), equals('mailto:fake@google.com'));
       });
 
       test('Find first email no URL', () {
-        expect(findFirstEmail('ygvtfr676 5v68fk uygbt85F^&%^&I%FVvc .'), equals(''));
+        expect(linkify.findFirstEmail('ygvtfr676 5v68fk uygbt85F^&%^&I%FVvc .'), equals(''));
       });
   });
 }

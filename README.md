@@ -6,13 +6,11 @@ Takes a string of plain text and linkifies URLs and email addresses. Dart port o
 
 	import "linkify";
 	
-	var linkifiedHtml = linkifyPlainText("text");
+	var linkify = new Linkify();
+	var linkifiedHtml = linkify.convert("text");
+	var linkifiedHtmlWithAttributes = linkify.convert(input, {'rel': '', 'target': ''});
+	var url = linkify.findFirstUrl("text");
 	
-	
-	import "linkify" as linkify;
-	
-	var linkifiedHtml = linkify.linkifyPlainText("text");
-
 ## Resources
 
 Original source of the Google [closure-library](https://code.google.com/p/closure-library/)'s 
