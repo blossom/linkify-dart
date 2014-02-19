@@ -2,6 +2,7 @@ name: linkify
 authors:
 - Nikolaus Graf <nik@blossom.io>
 - Peter Kofler <peter.kofler@code-cop.org>
+- Michael Bolin <bolinfest@google.com>
 version: 1.0.0
 homepage: https://github.com/blossom/linkify-dart
 description: Takes a string of plain text and linkifies URLs and email addresses. Dart port of Google closure-library's String.linkify
