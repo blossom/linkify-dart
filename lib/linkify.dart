@@ -5,7 +5,8 @@ import 'dart:convert';
 // * @fileoverview Utility function for linkifying text.
 class Linkify extends Converter<String, String> {
 
-  HtmlEscape _htmlEscape = new HtmlEscape();
+  HtmlEscape _attributeEscape = new HtmlEscape(HtmlEscapeMode.ATTRIBUTE);
+  HtmlEscape _elementEscape = new HtmlEscape(HtmlEscapeMode.ELEMENT);
 
   /**
    * Takes a string of plain text and linkifies URLs and email addresses. For a
@@ -32,48 +33,49 @@ class Linkify extends Converter<String, String> {
     for (var key in attributesMap.keys) {
       if (attributesMap[key].isNotEmpty) {
         attributesArray.addAll([
-            _htmlEscape.convert(key), '="',
-            _htmlEscape.convert(attributesMap[key]), '" ']);
+            _attributeEscape.convert(key), '="',
+            _attributeEscape.convert(attributesMap[key]), '" ']);
       }
     }
     var attributes = attributesArray.join('');
 
     return text.replaceAllMapped(
         _FIND_LINKS_RE,
-        (part, before, original, email, protocol) {
-          var output = [_htmlEscape.convert(before)];
-          if (!original) {
-            return output[0];
-          }
-          output.add('<a ', attributes, 'href="');
-          /** @type {string} */
-          var linkText;
-          /** @type {string} */
-          var afterLink;
-          if (email) {
-            output.add('mailto:');
-            linkText = email;
-            afterLink = '';
-          } else {
-            // This is a full url link.
-            if (!protocol) {
-              output.add('http://');
-            }
-            var splitEndingPunctuation =
-                original.match(_ENDS_WITH_PUNCTUATION_RE);
-            if (splitEndingPunctuation) {
-              linkText = splitEndingPunctuation[1];
-              afterLink = splitEndingPunctuation[2];
-            } else {
-              linkText = original;
-              afterLink = '';
-            }
-          }
-          linkText = _htmlEscape.convert(linkText);
-          afterLink = _htmlEscape.convert(afterLink);
-          output.addAll([linkText, '">', linkText, '</a>', afterLink]);
-          return output.join('');
+        (Match match) {
+          return _createAnchorTag(attributes, match[0], match[1], match[2], match[3], match[4]);
         });
+  }
+
+  String _createAnchorTag(String attributes, String part, String before, String original, String email, String protocol) {
+    var output = [_elementEscape.convert(before)];
+    if (original.isEmpty) {
+      return output[0];
+    }
+    output.addAll(['<a ', attributes, 'href="']);
+    String link;
+    String afterLink;
+    if (email != null) {
+      output.add('mailto:');
+      link = email;
+      afterLink = '';
+    } else {
+      // This is a full url link.
+      if (protocol == null) {
+        output.add('http://');
+      }
+      Match splitEndingPunctuation = _ENDS_WITH_PUNCTUATION_RE.firstMatch(original);
+      if (splitEndingPunctuation != null) {
+        link = splitEndingPunctuation[1];
+        afterLink = splitEndingPunctuation[2];
+      } else {
+        link = original;
+        afterLink = '';
+      }
+    }
+    var linkText = _elementEscape.convert(link);
+    afterLink = _elementEscape.convert(afterLink);
+    output.addAll([link, '">', linkText, '</a>', afterLink]);
+    return output.join('');
   }
 
 /**
