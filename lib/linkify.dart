@@ -22,7 +22,7 @@ class Linkify extends Converter<String, String> {
 
 // * @fileoverview Utility function for linkifying text.
 
-
+/*
 linkifyPlainText = function(text, opt_attributes) {
   var attributesMap = opt_attributes || {};
   // Set default options.
@@ -80,44 +80,35 @@ linkifyPlainText = function(text, opt_attributes) {
         return output.join('');
       });
 };
-
-String findFirstUrl(String data) {
-  return '';
-}
+*/
 
 /**
  * Gets the first URI in text.
  * @param {string} text Plain text.
  * @return {string} The first URL, or an empty string if not found.
  */
-findFirstUrl = function(text) {
-  var link = text.match(_URL);
-  return link != null ? link[0] : '';
-};
-
-String findFirstEmail(String data) {
-  return '';
+String findFirstUrl(String text) {
+  var links = text.allMatches(_URL);
+  return links.isNotEmpty ? links.first : '';
 }
-
 
 /**
  * Gets the first email address in text.
  * @param {string} text Plain text.
  * @return {string} The first email address, or an empty string if not found.
  */
-findFirstEmail = function(text) {
-  var email = text.match(_EMAIL);
-  return email != null ? email[0] : '';
-};
-
+String findFirstEmail(String text) {
+  var emails = text.allMatches(_EMAIL);
+  return emails.isNotEmpty ? emails.first : '';
+}
 
 /**
  * If one of these characters is at the end of a url, it will be considered as a
  * puncutation and not part of the url.
  */
-const String _ENDING_PUNCTUATION_CHARS = ':;,\\.?>\\]\\)!';
+static const String _ENDING_PUNCTUATION_CHARS = ':;,\\.?>\\]\\)!';
 
-RegExp _ENDS_WITH_PUNCTUATION_RE = new RegExp(
+static RegExp _ENDS_WITH_PUNCTUATION_RE = new RegExp(
     '^(.*)([' + _ENDING_PUNCTUATION_CHARS + '])\$');
 
 /**
@@ -125,30 +116,30 @@ RegExp _ENDS_WITH_PUNCTUATION_RE = new RegExp(
  * match against a url hostname and everything after it. It includes
  * "#-@", which represents the characters "#$%&'()*+,-./0123456789:;<=>?@".
  */
-String _ACCEPTABLE_URL_CHARS = _ENDING_PUNCTUATION_CHARS + '\\w~#-@!\\[\\]';
+static String _ACCEPTABLE_URL_CHARS = _ENDING_PUNCTUATION_CHARS + '\\w~#-@!\\[\\]';
 
 /**
  * List of all protocols patterns recognized in urls (mailto is handled in email
  * matching).
  */
-List _RECOGNIZED_PROTOCOLS = ['https?', 'ftp'];
+static List _RECOGNIZED_PROTOCOLS = ['https?', 'ftp'];
 
 /**
  * Regular expression pattern that matches the beginning of an url.
  * Contains a catching group to capture the scheme.
  */
-String _PROTOCOL_START = '(' + _RECOGNIZED_PROTOCOLS.join('|') + ')://';
+static String _PROTOCOL_START = '(' + _RECOGNIZED_PROTOCOLS.join('|') + ')://';
 
 /**
  * Regular expression pattern that matches the beginning of a typical
  * http url without the http:// scheme.
  */
-const String _WWW_START = 'www\\.';
+static const String _WWW_START = 'www\\.';
 
 /**
  * Regular expression pattern that matches an url.
  */
-String _URL =
+static String _URL =
     '(?:' + _PROTOCOL_START + '|' +
     _WWW_START + ')\\w[' +
     _ACCEPTABLE_URL_CHARS + ']*';
@@ -156,22 +147,22 @@ String _URL =
 /**
  * Regular expression pattern that matches a top level domain.
  */
-String _TOP_LEVEL_DOMAIN =
-    '(?:com|org|net|edu|gov' +
+static String _TOP_LEVEL_DOMAIN =
+    "(?:com|org|net|edu|gov" +
     // from http://www.iana.org/gtld/gtld.htm
-    '|aero|biz|cat|coop|info|int|jobs|mobi|museum|name|pro|travel' +
-    '|arpa|asia|xxx' +
+    "|aero|biz|cat|coop|info|int|jobs|mobi|museum|name|pro|travel" +
+    "|arpa|asia|xxx" +
     // a two letter country code
-    '|[a-z][a-z])\\b';
+    "|[a-z][a-z])\\b";
 
 /**
  * Regular expression pattern that matches an email.
  * Contains a catching group to capture the email without the optional "mailto:"
  * prefix.
  */
-String _EMAIL =
-    '(?:mailto:)?([\\w.+-]+@[A-Za-z0-9.-]+\\.' +
-    _TOP_LEVEL_DOMAIN + ')';
+static String _EMAIL =
+    "(?:mailto:)?([\\w.+-]+@[A-Za-z0-9.-]+\\." +
+    _TOP_LEVEL_DOMAIN + ")";
 
 /**
  * Regular expression to match all the links (url or email) in a string.
@@ -180,7 +171,7 @@ String _EMAIL =
  * Third match is the email address in the case of an email.
  * Fourth match is the scheme of the url if specified.
  */
-RegExp _FIND_LINKS_RE = new RegExp(
+static RegExp _FIND_LINKS_RE = new RegExp(
     // Match everything including newlines.
     '([\\S\\s]*?)(' +
     // Match email after a word break.
