@@ -6,7 +6,7 @@ import 'dart:convert';
 class Linkify extends Converter<String, String> {
 
   HtmlEscape _attributeEscape = new HtmlEscape(HtmlEscapeMode.ATTRIBUTE);
-  HtmlEscape _elementEscape = new HtmlEscape(HtmlEscapeMode.ELEMENT);
+  HtmlEscape _elementEscape = new HtmlEscape();
 
   /**
    * Takes a string of plain text and linkifies URLs and email addresses. For a
@@ -52,11 +52,11 @@ class Linkify extends Converter<String, String> {
       return output[0];
     }
     output.addAll(['<a ', attributes, 'href="']);
-    String link;
+    String linkText;
     String afterLink;
     if (email != null) {
       output.add('mailto:');
-      link = email;
+      linkText = email;
       afterLink = '';
     } else {
       // This is a full url link.
@@ -65,16 +65,16 @@ class Linkify extends Converter<String, String> {
       }
       Match splitEndingPunctuation = _ENDS_WITH_PUNCTUATION_RE.firstMatch(original);
       if (splitEndingPunctuation != null) {
-        link = splitEndingPunctuation[1];
+        linkText = splitEndingPunctuation[1];
         afterLink = splitEndingPunctuation[2];
       } else {
-        link = original;
+        linkText = original;
         afterLink = '';
       }
     }
-    var linkText = _elementEscape.convert(link);
+    linkText = _attributeEscape.convert(linkText);
     afterLink = _elementEscape.convert(afterLink);
-    output.addAll([link, '">', linkText, '</a>', afterLink]);
+    output.addAll([linkText, '">', linkText, '</a>', afterLink]);
     return output.join('');
   }
 
