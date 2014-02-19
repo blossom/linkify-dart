@@ -88,8 +88,8 @@ linkifyPlainText = function(text, opt_attributes) {
  * @return {string} The first URL, or an empty string if not found.
  */
 String findFirstUrl(String text) {
-  var links = text.allMatches(_URL);
-  return links.isNotEmpty ? links.first : '';
+  var link = _URL_RE.firstMatch(text);
+  return link != null ? link.group(0) : '';
 }
 
 /**
@@ -143,6 +143,8 @@ static String _URL =
     '(?:' + _PROTOCOL_START + '|' +
     _WWW_START + ')\\w[' +
     _ACCEPTABLE_URL_CHARS + ']*';
+
+static RegExp _URL_RE = new RegExp(_URL);
 
 /**
  * Regular expression pattern that matches a top level domain.
