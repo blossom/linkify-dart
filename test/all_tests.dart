@@ -31,9 +31,14 @@ void assertLinkify(String input, String expected) {
   expect(linkifyPlainText(input, {"rel": '', "target": ''}), equals(expected));
 }
 
+// do not want to change all tests, create method for easier conversion from JS
+void assertEquals(String input, String expected) {
+  expect(input, equals(expected));
+}
+
 main() {
 
-  group('Linkify', () {
+  group('linkifyPlainText', () {
 
     HtmlEscape htmlEscape;
 
@@ -337,11 +342,36 @@ main() {
     });
 
   });
+
+  group('findFirstUrl', () {
+     test('find first URL no scheme', () {
+        assertEquals('www.google.com', findFirstUrl('www.google.com'));
+      });
+
+     test('find first URL no scheme with text', () {
+        assertEquals('www.google.com', findFirstUrl('prefix www.google.com something'));
+     });
+
+      test('find first URL scheme', () {
+        assertEquals('http://www.google.com', findFirstUrl('http://www.google.com'));
+      });
+
+      test('find first URL scheme with text', () {
+        assertEquals('http://www.google.com', findFirstUrl('prefix http://www.google.com something'));
+      });
+
+      test('find first URL no url', () {
+        assertEquals('', findFirstUrl('ygvtfr676 5v68fk uygbt85F^&%^&I%FVvc .'));
+      });
+  });
+
+  group('Linkify', () {
+  });
 }
 
 
 function testLinkifyNoOptions() {
-  div.innerHTML = goog.string.linkify.linkifyPlainText('http://www.google.com');
+  div.innerHTML = linkifyPlainText('http://www.google.com');
   goog.testing.dom.assertHtmlContentsMatch(
       '<a href="http://www.google.com" target="_blank" rel="nofollow">' +
       'http://www.google.com<\/a>',
@@ -349,7 +379,7 @@ function testLinkifyNoOptions() {
 }
 
 function testLinkifyOptionsNoAttributes() {
-  div.innerHTML = goog.string.linkify.linkifyPlainText(
+  div.innerHTML = linkifyPlainText(
       'The link for www.google.com is located somewhere in ' +
       'https://www.google.fr/?hl=en, you should find it easily.',
       {rel: '', target: ''});
@@ -362,7 +392,7 @@ function testLinkifyOptionsNoAttributes() {
 }
 
 function testLinkifyOptionsClassName() {
-  div.innerHTML = goog.string.linkify.linkifyPlainText(
+  div.innerHTML = linkifyPlainText(
       'Attribute with <class> name www.w3c.org.',
       {'class': 'link-added'});
   goog.testing.dom.assertHtmlContentsMatch(
@@ -371,53 +401,29 @@ function testLinkifyOptionsClassName() {
       div, true /* opt_strictAttributes */);
 }
 
-function testFindFirstUrlNoScheme() {
-  assertEquals('www.google.com', goog.string.linkify.findFirstUrl(
-      'www.google.com'));
-}
 
-function testFindFirstUrlNoSchemeWithText() {
-  assertEquals('www.google.com', goog.string.linkify.findFirstUrl(
-      'prefix www.google.com something'));
-}
-
-function testFindFirstUrlScheme() {
-  assertEquals('http://www.google.com', goog.string.linkify.findFirstUrl(
-      'http://www.google.com'));
-}
-
-function testFindFirstUrlSchemeWithText() {
-  assertEquals('http://www.google.com', goog.string.linkify.findFirstUrl(
-      'prefix http://www.google.com something'));
-}
-
-function testFindFirstUrlNoUrl() {
-  assertEquals('', goog.string.linkify.findFirstUrl(
-      'ygvtfr676 5v68fk uygbt85F^&%^&I%FVvc .'));
-}
-
-function testFindFirstEmailNoScheme() {
-  assertEquals('fake@google.com', goog.string.linkify.findFirstEmail(
+void testFindFirstEmailNoScheme() {
+  assertEquals('fake@google.com', findFirstEmail(
       'fake@google.com'));
 }
 
-function testFindFirstEmailNoSchemeWithText() {
-  assertEquals('fake@google.com', goog.string.linkify.findFirstEmail(
+void testFindFirstEmailNoSchemeWithText() {
+  assertEquals('fake@google.com', findFirstEmail(
       'prefix fake@google.com something'));
 }
 
-function testFindFirstEmailScheme() {
-  assertEquals('mailto:fake@google.com', goog.string.linkify.findFirstEmail(
+void testFindFirstEmailScheme() {
+  assertEquals('mailto:fake@google.com', findFirstEmail(
       'mailto:fake@google.com'));
 }
 
-function testFindFirstEmailSchemeWithText() {
-  assertEquals('mailto:fake@google.com', goog.string.linkify.findFirstEmail(
+void testFindFirstEmailSchemeWithText() {
+  assertEquals('mailto:fake@google.com', findFirstEmail(
       'prefix mailto:fake@google.com something'));
 }
 
-function testFindFirstEmailNoUrl() {
-  assertEquals('', goog.string.linkify.findFirstEmail(
+void testFindFirstEmailNoUrl() {
+  assertEquals('', findFirstEmail(
       'ygvtfr676 5v68fk uygbt85F^&%^&I%FVvc .'));
 }
 
