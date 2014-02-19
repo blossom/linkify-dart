@@ -2,7 +2,10 @@ library linkify;
 
 import 'dart:convert';
 
+// * @fileoverview Utility function for linkifying text.
 class Linkify extends Converter<String, String> {
+
+  HtmlEscape _htmlEscape = new HtmlEscape();
 
   /**
    * Takes a string of plain text and linkifies URLs and email addresses. For a
@@ -15,72 +18,63 @@ class Linkify extends Converter<String, String> {
    *      default attributes set rel='' and target='_blank'.
    * @return {string} HTML Linkified HTML text.
    */
-  String convert(String data, [ Map attributes ]) {
-    return '';
-  }
-
-
-// * @fileoverview Utility function for linkifying text.
-
-/*
-linkifyPlainText = function(text, opt_attributes) {
-  var attributesMap = opt_attributes || {};
-  // Set default options.
-  if (!('rel' in attributesMap)) {
-    attributesMap['rel'] = 'nofollow';
-  }
-  if (!('target' in attributesMap)) {
-    attributesMap['target'] = '_blank';
-  }
-  // Creates attributes string from options.
-  var attributesArray = [];
-  for (var key in attributesMap) {
-    if (attributesMap.hasOwnProperty(key) && attributesMap[key]) {
-      attributesArray.push(
-          goog.string.htmlEscape(key), '="',
-          goog.string.htmlEscape(attributesMap[key]), '" ');
+  String convert(String text, [ Map<String, String> opt_attributes ]) {
+    var attributesMap = opt_attributes != null ? opt_attributes : {};
+    // Set default options.
+    if (!attributesMap.containsKey('rel')) {
+      attributesMap['rel'] = 'nofollow';
     }
-  }
-  var attributes = attributesArray.join('');
+    if (!attributesMap.containsKey('target')) {
+      attributesMap['target'] = '_blank';
+    }
+    // Creates attributes string from options.
+    var attributesArray = [];
+    for (var key in attributesMap.keys) {
+      if (attributesMap[key].isNotEmpty) {
+        attributesArray.addAll([
+            _htmlEscape.convert(key), '="',
+            _htmlEscape.convert(attributesMap[key]), '" ']);
+      }
+    }
+    var attributes = attributesArray.join('');
 
-  return text.replace(
-      _FIND_LINKS_RE,
-      function(part, before, original, email, protocol) {
-        var output = [goog.string.htmlEscape(before)];
-        if (!original) {
-          return output[0];
-        }
-        output.push('<a ', attributes, 'href="');
-        /** @type {string} */
-        var linkText;
-        /** @type {string} */
-        var afterLink;
-        if (email) {
-          output.push('mailto:');
-          linkText = email;
-          afterLink = '';
-        } else {
-          // This is a full url link.
-          if (!protocol) {
-            output.push('http://');
+    return text.replaceAllMapped(
+        _FIND_LINKS_RE,
+        (part, before, original, email, protocol) {
+          var output = [_htmlEscape.convert(before)];
+          if (!original) {
+            return output[0];
           }
-          var splitEndingPunctuation =
-              original.match(_ENDS_WITH_PUNCTUATION_RE);
-          if (splitEndingPunctuation) {
-            linkText = splitEndingPunctuation[1];
-            afterLink = splitEndingPunctuation[2];
-          } else {
-            linkText = original;
+          output.add('<a ', attributes, 'href="');
+          /** @type {string} */
+          var linkText;
+          /** @type {string} */
+          var afterLink;
+          if (email) {
+            output.add('mailto:');
+            linkText = email;
             afterLink = '';
+          } else {
+            // This is a full url link.
+            if (!protocol) {
+              output.add('http://');
+            }
+            var splitEndingPunctuation =
+                original.match(_ENDS_WITH_PUNCTUATION_RE);
+            if (splitEndingPunctuation) {
+              linkText = splitEndingPunctuation[1];
+              afterLink = splitEndingPunctuation[2];
+            } else {
+              linkText = original;
+              afterLink = '';
+            }
           }
-        }
-        linkText = goog.string.htmlEscape(linkText);
-        afterLink = goog.string.htmlEscape(afterLink);
-        output.push(linkText, '">', linkText, '</a>', afterLink);
-        return output.join('');
-      });
-};
-*/
+          linkText = _htmlEscape.convert(linkText);
+          afterLink = _htmlEscape.convert(afterLink);
+          output.addAll([linkText, '">', linkText, '</a>', afterLink]);
+          return output.join('');
+        });
+  }
 
 /**
  * Gets the first URI in text.
@@ -150,12 +144,12 @@ static RegExp _URL_RE = new RegExp(_URL);
  * Regular expression pattern that matches a top level domain.
  */
 static String _TOP_LEVEL_DOMAIN =
-    "(?:com|org|net|edu|gov" +
+    '(?:com|org|net|edu|gov' +
     // from http://www.iana.org/gtld/gtld.htm
-    "|aero|biz|cat|coop|info|int|jobs|mobi|museum|name|pro|travel" +
-    "|arpa|asia|xxx" +
+    '|aero|biz|cat|coop|info|int|jobs|mobi|museum|name|pro|travel' +
+    '|arpa|asia|xxx' +
     // a two letter country code
-    "|[a-z][a-z])\\b";
+    '|[a-z][a-z])\\b';
 
 /**
  * Regular expression pattern that matches an email.
@@ -163,8 +157,8 @@ static String _TOP_LEVEL_DOMAIN =
  * prefix.
  */
 static String _EMAIL =
-    "(?:mailto:)?([\\w.+-]+@[A-Za-z0-9.-]+\\." +
-    _TOP_LEVEL_DOMAIN + ")";
+    '(?:mailto:)?([\\w.+-]+@[A-Za-z0-9.-]+\\.' +
+    _TOP_LEVEL_DOMAIN + ')';
 
 static RegExp _EMAIL_RE = new RegExp(_EMAIL);
 
