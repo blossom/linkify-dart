@@ -4,6 +4,7 @@ authors:
 - Peter Kofler <peter.kofler@code-cop.org>
 version: 1.0.0
 homepage: https://github.com/blossom/linkify-dart
+description: Takes a string of plain text and linkifies URLs and email addresses. Dart port of Google closure-library's String.linkify
 environment:
   sdk: '>=1.0.0 <2.0.0'
 dev_dependencies:

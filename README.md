@@ -1,6 +1,6 @@
 # Task Queue
 
-TODO
+Takes a string of plain text and linkifies URLs and email addresses. Dart port of Google closure-library's String.linkify.
 
 ## Example
 
