@@ -98,8 +98,8 @@ String findFirstUrl(String text) {
  * @return {string} The first email address, or an empty string if not found.
  */
 String findFirstEmail(String text) {
-  var emails = text.allMatches(_EMAIL);
-  return emails.isNotEmpty ? emails.first : '';
+  var email = _EMAIL_RE.firstMatch(text);
+  return email != null ? email.group(0) : '';
 }
 
 /**
@@ -163,6 +163,8 @@ static String _TOP_LEVEL_DOMAIN =
 static String _EMAIL =
     "(?:mailto:)?([\\w.+-]+@[A-Za-z0-9.-]+\\." +
     _TOP_LEVEL_DOMAIN + ")";
+
+static RegExp _EMAIL_RE = new RegExp(_EMAIL);
 
 /**
  * Regular expression to match all the links (url or email) in a string.
